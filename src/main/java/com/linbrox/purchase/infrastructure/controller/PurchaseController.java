@@ -39,14 +39,18 @@ public class PurchaseController {
     })
     @PostMapping("/purchase/create")
     public Mono<Purchase> create(@RequestBody PurchaseRequest request){
-        var purchase = this.purchaseService.create(request.getConvertionId().toString(),
-                request.getFullName(),
-                request.getVersion(),
-                request.getModel(),
-                request.getCryptocurrency());
-        if(purchase==null){
-            throw  new ResponseStatusException(HttpStatus.NOT_FOUND, "Purchase not found");
+        try{
+            var purchase = this.purchaseService.create(request.getConvertionId().toString(),
+                    request.getFullName(),
+                    request.getVersion(),
+                    request.getModel(),
+                    request.getCryptocurrency());
+            if(purchase==null){
+                throw  new ResponseStatusException(HttpStatus.NOT_FOUND, "Purchase not found");
+            }
+            return Mono.just(purchase);
+        }catch (Exception e){
+            throw  new ResponseStatusException(HttpStatus.BAD_REQUEST, "Something is wrong");
         }
-        return Mono.just(purchase);
     }
 }
