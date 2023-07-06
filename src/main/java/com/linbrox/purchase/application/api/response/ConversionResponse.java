@@ -1,4 +1,4 @@
-package com.linbrox.purchase.conversion.response;
+package com.linbrox.purchase.application.api.response;
 
 import lombok.Data;
 

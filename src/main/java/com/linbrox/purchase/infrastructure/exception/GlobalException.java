@@ -1,4 +1,4 @@
-package com.linbrox.purchase.exception;
+package com.linbrox.purchase.infrastructure.exception;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

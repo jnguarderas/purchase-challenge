@@ -1,41 +1,39 @@
-package com.linbrox.purchase.service;
+package com.linbrox.purchase.application.service.impl;
 
-
+import com.linbrox.purchase.application.api.response.ConversionResponse;
+import com.linbrox.purchase.application.api.response.ConversionVersion;
+import com.linbrox.purchase.application.service.ConversionService;
+import com.linbrox.purchase.application.service.MessageBrokerService;
+import com.linbrox.purchase.application.service.PurchaseService;
 import com.linbrox.purchase.common.CryptoCurrencyEnum;
 import com.linbrox.purchase.common.HyundaiModelEnum;
-import com.linbrox.purchase.config.RabbitMQConfig;
-import com.linbrox.purchase.conversion.ConversionService;
-import com.linbrox.purchase.conversion.response.ConversionResponse;
-import com.linbrox.purchase.conversion.response.ConversionVersion;
-import com.linbrox.purchase.entity.Purchase;
-import com.linbrox.purchase.repository.PurchaseRepository;
+import com.linbrox.purchase.domain.model.Purchase;
+import com.linbrox.purchase.domain.repository.PurchaseRepository;
+import com.linbrox.purchase.infrastructure.config.RabbitMQConfig;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.UUID;
 
-@Service
-public class PurchaseService {
+public class PurchaseServiceImpl implements PurchaseService {
+
     private final PurchaseRepository purchaseRepository;
     private final ConversionService conversionService;
+    private final MessageBrokerService messageBrokerService;
 
-    private final RabbitTemplate rabbitTemplate;
-
-    public PurchaseService(PurchaseRepository purchaseRepository,
-                           ConversionService conversionService,
-                           RabbitTemplate rabbitTemplate) {
+    public PurchaseServiceImpl(PurchaseRepository purchaseRepository, ConversionService conversionService, MessageBrokerService messageBrokerService) {
         this.purchaseRepository = purchaseRepository;
         this.conversionService = conversionService;
-        this.rabbitTemplate = rabbitTemplate;
+        this.messageBrokerService = messageBrokerService;
     }
 
-    public Purchase create(String uuidConvertion, String fullName, String version, HyundaiModelEnum modelEnum, CryptoCurrencyEnum cryptoCurrency){
+    @Override
+    public Purchase create(String uuidConvertion, String fullName, String version, HyundaiModelEnum modelEnum, CryptoCurrencyEnum cryptoCurrency) {
         ConversionResponse response = this.conversionService.callExternalAPI(UUID.fromString(uuidConvertion)).block();
         for(ConversionVersion conversionVersion: response.getConversionVersionList()){
             if(conversionVersion.getVersion().equals(version) &&
-            conversionVersion.getHyundaiModel().equals(modelEnum.name()) &&
-            conversionVersion.getCryptoCurrency().equals(cryptoCurrency.name())){
+                    conversionVersion.getHyundaiModel().equals(modelEnum.name()) &&
+                    conversionVersion.getCryptoCurrency().equals(cryptoCurrency.name())){
                 Purchase purchase = Purchase.builder()
                         .fullName(fullName)
                         .version(conversionVersion.getVersion())
@@ -46,7 +44,7 @@ public class PurchaseService {
                         .convertionId(response.getId())
                         .createdAt(new Date())
                         .build();
-                rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, purchase.toString());
+                messageBrokerService.sendMessage(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.QUEUE_NAME, purchase.toString());
                 return this.purchaseRepository.save(purchase);
             }
         }

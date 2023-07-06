@@ -1,4 +1,4 @@
-package com.linbrox.purchase.config;
+package com.linbrox.purchase.infrastructure.config;
 
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;

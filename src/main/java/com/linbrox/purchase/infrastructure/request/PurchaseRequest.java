@@ -1,4 +1,4 @@
-package com.linbrox.purchase.request;
+package com.linbrox.purchase.infrastructure.request;
 
 
 import com.linbrox.purchase.common.CryptoCurrencyEnum;

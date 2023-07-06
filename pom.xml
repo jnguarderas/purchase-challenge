@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.linbrox</groupId>
-    <artifactId>purchase-challenge</artifactId>
+    <artifactId>purchaseEntity-challenge</artifactId>
     <version>1.0</version>
-    <name>purchase-challenge</name>
-    <description>purchase-challenge</description>
+    <name>purchaseEntity-challenge</name>
+    <description>purchaseEntity-challenge</description>
     <properties>
         <java.version>17</java.version>
         <testcontainers.version>1.18.3</testcontainers.version>

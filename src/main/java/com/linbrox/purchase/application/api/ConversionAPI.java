@@ -1,6 +1,6 @@
-package com.linbrox.purchase.conversion;
+package com.linbrox.purchase.application.api;
 
-import com.linbrox.purchase.conversion.response.ConversionResponse;
+import com.linbrox.purchase.application.api.response.ConversionResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.http.MediaType;
